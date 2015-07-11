@@ -27,11 +27,12 @@ let getMethodName = ($el) => {
 }
 
 let obscure = (html, toObscure) => {
-  return html.replace(new RegExp(toObscure, 'g'), '_____')
+  return html.replace(new RegExp(toObscure, 'g'), '___')
 }
 
 let toHTML = ($el) => {
   getStyles($el)
+  if ($el[0] === undefined) debugger;
   return $el[0].outerHTML
 }
 
@@ -53,14 +54,24 @@ let toFlashCards = () => {
     let methodCategoryPeers = $el.prevAll('.groupTitle:first').nextUntil('.groupTitle')
 
     let description = $el.find('.synopsis');
-    let descriptionHTML = toHTML(description);
-    let obscuredDescriptionHTML = obscure(descriptionHTML, methodName)
+    if (description.length) {
+      var descriptionHTML = toHTML(description);
+      var obscuredDescriptionHTML = obscure(descriptionHTML, methodName)
+    } else {
+      var descriptionHTML = ''
+      var obscuredDescriptionHTML = ''
+    }
 
     let code = formatCode($el.find('.codeBlock'));
-    let codeHTML = perserveHTMLLineBreaks(toHTML(code));
-    let obscuredCodeHTML = obscure(codeHTML, methodName)  
+    if (code.length) {
+      var codeHTML = perserveHTMLLineBreaks(toHTML(code));
+      var obscuredCodeHTML = obscure(codeHTML, methodName)
+    } else {
+      var codeHTML = ''
+      var obscuredCodeHTML = ''
+    }
 
-    let footer = `<br/><br/><i>${methodCategoryPeers.length} ${methodCategory.toLowerCase()} methods.</i>`
+    let footer = `<br/><br/><i>One of ${methodCategoryPeers.length} "${methodCategory.toLowerCase()}" methods for ${dataStructure}.</i>`
 
     let front = `<h3>${dataStructure}</h3>${obscuredDescriptionHTML}${obscuredCodeHTML}${footer}`.replace(/\n/g, ' ')
     let back = `<h2>${methodName}</h2>${descriptionHTML}${codeHTML}`.replace(/\n/g, ' ')
@@ -70,4 +81,6 @@ let toFlashCards = () => {
   }).toArray().join("\n")
 }
 
-// copy(toFlashCards())
+let links = $('.scrollContent h2 a')
+
+copy(toFlashCards())
